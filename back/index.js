@@ -10,14 +10,28 @@ const bodyParser = require( 'body-parser');
 
 const app = express(); 
 const server = http.createServer(app);
-const io = socketIO(server);
+//const io = socketIO(server);
 
 const routes = require('./routes/auth');
 const rooms = require('./routes/rooms');
 
 // TODO: add cors to allow cross origin requests
-app.use(cors());
+const io = socketIO(server, {
+  cors: {
+    origin: '*',
+  }
+});
+app.use(cors({origin: 'http://localhost:3000', credentials: true}));
 
+/*
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Authorization'],
+};
+
+app.use(cors(corsOptions));
+*/
 
 dotenv.config();
 app.use(bodyParser.urlencoded({ extended: true }));
