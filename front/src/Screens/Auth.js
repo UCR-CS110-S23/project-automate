@@ -17,7 +17,21 @@ class Auth extends react.Component{
 
     login = (data) => {
         // TODO: write codes to login
+        console.log(data);
+
+        // send login request
+        fetch("http://localhost:3001/api/auth/login",{
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+            username: data.username,
+            password: data.password
+            })
+        })
     }
+    
 
     register = (data) => {
         // TODO: write codes to register
