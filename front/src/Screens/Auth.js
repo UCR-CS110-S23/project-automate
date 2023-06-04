@@ -22,8 +22,21 @@ class Auth extends react.Component{
     register = (data) => {
         // TODO: write codes to register
         console.log(data);
+        // Send registration request
+        fetch("http://localhost:3001/api/auth/register", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+            username: data.username,
+            password: data.password,
+            name: data.name
+            })
+        })
+            
     }
-
+    
     render(){
         let display = null;
         if (this.state.showForm){

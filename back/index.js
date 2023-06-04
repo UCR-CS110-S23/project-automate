@@ -10,28 +10,15 @@ const bodyParser = require( 'body-parser');
 
 const app = express(); 
 const server = http.createServer(app);
-//const io = socketIO(server);
+const io = socketIO(server);
 
 const routes = require('./routes/auth');
 const rooms = require('./routes/rooms');
 
+
 // TODO: add cors to allow cross origin requests
-const io = socketIO(server, {
-  cors: {
-    origin: '*',
-  }
-});
-app.use(cors({origin: 'http://localhost:3000', credentials: true}));
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
-/*
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Authorization'],
-};
-
-app.use(cors(corsOptions));
-*/
 
 dotenv.config();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,6 +30,7 @@ app.use(bodyParser.json());
 mongoose.connect(process.env.mongodb);
 const database = mongoose.connection;
 
+database.on('error', (error) => console.error(error));
 database.once('connected', ()=>{
   console.log("Connected to the DB!");
 })
@@ -56,8 +44,6 @@ app.use(session({
   saveUninitialized: false,
 }))
 
-//app.use('/api/auth', auth);
-//app.use('/api/posts',posts);
 
 app.get('/', (req, res) => {
   if (req.session && req.session.authenticated) {
