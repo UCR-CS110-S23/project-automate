@@ -30,6 +30,21 @@ class Auth extends react.Component{
             password: data.password
             })
         })
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.status) {
+            // Login successful change screen to the lobby
+            this.props.changeScreen("lobby");
+            } else {
+            // Login failed
+            console.error("Login failed:", data.msg);
+            this.props.changeScreen("auth");
+            }
+        })
+        .catch((error) => {
+            console.error("Login error:", error);
+            // Handle fetch error
+        });
     }
     
 

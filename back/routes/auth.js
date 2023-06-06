@@ -13,8 +13,9 @@ router.post('/login', async (req, res) => {
     
     if (!user)
       return res.json({ msg: "Incorrect Username ", status: false });
-    else if (user.password !== password)
+    else if (user.password !== password){
       return res.json({ msg: "Incorrect Password", status: false });
+    }
     else {
       session.authenticated = true;
       session.username = username;
