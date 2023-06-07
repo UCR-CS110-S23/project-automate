@@ -1,4 +1,3 @@
-
 const express = require("express");
 const socketIO = require('socket.io');
 const http = require('http');
@@ -7,8 +6,10 @@ const session = require('express-session');
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require( 'body-parser');
+
 const routes = require('./routes/auth');
 const rooms = require('./routes/rooms');
+
 const messages = require('./routes/message')
 const Message = require("./model/messages");
 const User = require("./model/user");
@@ -50,9 +51,6 @@ const sessionMiddleware = session({
 
 app.use(sessionMiddleware)
 
-
-
-
 app.get('/', (req, res) => {
   if (req.session && req.session.authenticated) {
     res.json({ message: "logged in", username: req.session.username });
@@ -62,7 +60,6 @@ app.get('/', (req, res) => {
     res.json({ message: "not logged" });
   }
 });
-
 
 app.use("/api/auth/", routes);
 app.use("/api/messages/", messages);
@@ -114,23 +111,25 @@ io.on('connection', (socket) => {
     console.log(`user ${userName} is joined to room ${room}`);
     io.emit('message', {message: `${userName} has joined the room`, room: room});
   });
-
+  // Handle events for logged in user
   socket.on('message', async ({message, username}) => {
-    // a user sends a message to the room
-    io.emit('message', {message: `${message}`, room: room}); // This line broadcasts the message to all clients
+    // Handle the message
+    io.emit('message', {message: `${message}`, room: room});
     console.log(`Message sent by ${username}: ${message}`);
 
+    // Save the message to the database
     try {
       const user = await User.findOne({username: username});
-      const UserRoom = await Room.findOne({name: room})
+      const userRoom = await Room.findOne({name: room})
       const newMessage = new Message({
           message: {text: message},
           sender: user._id,
-          room: UserRoom,
+          room: userRoom,
       });
       await newMessage.save();
   } catch(err) {
-      console.log('Error saving message:', err);
+    // Error saving message
+    console.log('Error saving message:', err);
   }
 });
 
@@ -139,8 +138,7 @@ socket.on('leave', (data) => {
   io.emit('message', {message: `${data.username} has left the room`, room: room});
 });
 
-
-  socket.on('disconnect', () => {
-    console.log(`user ${userName} disconnected from room ${room}`);
-  });
+socket.on('disconnect', () => {
+  console.log(`user ${userName} disconnected from room ${room}`);
+});
 });

@@ -31,15 +31,15 @@ class Auth extends react.Component{
         })
         .then((data) => {
           if (data.status === true) {
-            // Login is successful, change the screen to Lobby
+            // Add logic for handling successful login
             this.props.changeScreen("lobby");
           } else {
-            // Login failed, handle it here
+            // Add logic for handling login failure
             console.log("Login failed: " + data.msg);
           }
         })
         .catch((error) => {
-          // Network or connection error, handle gracefully
+          // Add logic for handling login error
           console.log("Login error", error);
         });
       }
@@ -54,18 +54,18 @@ class Auth extends react.Component{
             body: JSON.stringify(data),
         })
         .then((response) => {
-            if (response.status == 201) {
-                // User registration successful, you can redirect them to the login page, or show a success message
+            if (response.status === 201) {
+                // Add logic for handling successful registration
                 this.setState({showForm: false});
             }
             else {
-                // User registration failed, handle it here
+                // Add logic for handling registration failure
                 console.log("Registration failed");
             }
         })
         .catch((error) => {
-            // Network or connection error, handle gracefully
-            console.log("Registration error", error);
+            // Add logic for handling registration error
+            console.log("Error during registration", error);
         });
       }
       
@@ -87,19 +87,16 @@ render() {
     }
     else {
         display = 
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                <Button variant="contained" color="primary" onClick={() => this.setState({showForm: true, selectedForm:"login"})}> Login </Button>
-                <Button variant="contained" color="secondary" onClick={() => this.setState({showForm: true, selectedForm: "register"})}> Register </Button>
-            </Box>;
+            <div>
+                <Button onClick={() => this.setState({showForm: true, selectedForm:"login"})}> Login </Button>
+                <Button onClick={() => this.setState({showForm: true, selectedForm: "register"})}> Register </Button>
+            </div>;
     }
     return(
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, m: 4 }}>
-            <Typography variant="h3" component="h1"> Welcome to Our Messaging App! </Typography>
-            <Typography variant="subtitle1">Stay connected with your friends and colleagues in real-time</Typography>
-            <Box sx={{ width: '100%', maxWidth: 400 }}>
-                {display}
-            </Box>
-        </Box>
+        <div>
+            <h1> Welcome to our website! </h1>
+            {display}
+        </div>
     );
 }
 }

@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router()
-const Room = require('../model/room'); // Assuming Room model is in the models folder
-const User = require('../model/user'); // Assuming User model is in the models folder
+
+const Room = require('../model/room'); 
+const User = require('../model/user');
 
 module.exports = router;
 
-//Get all the rooms
 router.get('/all', async (req, res) => {
-    // Check the database to only return the rooms that the user is in
+    // TODO: you have to check the database to only return the rooms that the user is in
     const username = req.session.username;
     const user = await User.findOne({ username });
     if (user) {
@@ -19,30 +19,27 @@ router.get('/all', async (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
-  // Check if room with the same name already exists
-  const existingRoom = await Room.findOne({ name: req.body.name });
-  if (existingRoom) {
-      return res.status(400).json({ message: 'Room with this name already exists' });
-  }
+    // TODO: write necessary codes to create a new room
+    const existingRoom = await Room.findOne({ name: req.body.name });
+    if (existingRoom) {
+        return res.status(400).json({ message: 'Room already exists' });
+    }
+    const newRoom = new Room({ name: req.body.name });
+    const savedRoom = await newRoom.save();
 
-  // Create a new room
-  const newRoom = new Room({ name: req.body.name });
-  const savedRoom = await newRoom.save();
-
-  // Add the room to the user's list of rooms
-  const username = req.session.username;
-  const user = await User.findOne({ username });
-  if (user) {
-      user.rooms.push(savedRoom._id);
-      await user.save();
-  }
-  
-  res.json({ message: 'Room created' });
+    const username = req.session.username;
+    const user = await User.findOne({ username });
+    if (user) {
+        user.rooms.push(savedRoom._id);
+        await user.save();
+    }
+    
+    res.json({ message: 'Room created' });
 });
 
 
 router.post('/join', async (req, res) => {
-    // Join a new room
+    // TODO: write necessary codes to join a new room
     const username = req.session.username;
     const roomName = req.body.roomName;
 
@@ -59,7 +56,7 @@ router.post('/join', async (req, res) => {
 });
 
 router.delete('/leave', async (req, res) => {
-    // Leave a room
+    // TODO: write necessary codes to delete a room
     const username = req.session.username;
     const roomName = req.body.roomName;
 
@@ -74,6 +71,6 @@ router.delete('/leave', async (req, res) => {
         await user.save();
         res.json({ message: 'Left room' });
     } else {
-        res.status(400).json({ message: 'Room does not exist or user is not in the room' });
+        res.status(400).json({ message: 'Room does not exist' });
     }
 });
