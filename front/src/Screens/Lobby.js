@@ -7,9 +7,9 @@ class Lobby extends react.Component {
         super(props);
         this.state = {
             rooms: undefined,
-            createFormVisible: false,
-            joinFormVisible: false,
-            deleteFormVisible: false,
+            createFormVis: false,
+            joinFormVis: false,
+            deleteFormVis: false,
             error: null,
         }
     }
@@ -181,17 +181,17 @@ class Lobby extends react.Component {
 
     handleJoinRoom = () => {
         // Toggle visibility of join room form
-        this.setState(prevState => ({joinFormVisible: !prevState.joinFormVisible}));
+        this.setState(prevState => ({joinFormVis: !prevState.joinFormVis}));
     }
 
     handleCreateRoom = () => {
         // Toggle visibility of create room form
-        this.setState(prevState => ({createFormVisible: !prevState.createFormVisible}));
+        this.setState(prevState => ({createFormVis: !prevState.createFormVis}));
     }
 
     handleDeleteRoom = () => {
         // Toggle visibility of delete room form
-        this.setState(prevState => ({deleteFormVisible: !prevState.deleteFormVisible}));
+        this.setState(prevState => ({deleteFormVis: !prevState.deleteFormVis}));
     }
     
     render(){
@@ -201,22 +201,10 @@ class Lobby extends react.Component {
                 <Grid>
                     <Grid>
                         <div>
-                            <Button onClick={this.handleCreateRoom}>
-                                Create Room
-                            </Button>
-                            {this.state.createFormVisible && 
-                                <Form
-                                    type='Create Room'
-                                    fields={['name']}
-                                    submit={this.createRoom}
-                                    close={this.handleCreateRoom}
-                                />
-                            }
-
                             <Button onClick={this.handleJoinRoom}>
                                 Join Room
                             </Button>
-                            {this.state.joinFormVisible && 
+                            {this.state.joinFormVis && 
                                 <Form
                                     type='Join Room'
                                     fields={['roomName']}
@@ -224,12 +212,22 @@ class Lobby extends react.Component {
                                     close={this.handleJoinRoom}
                                 />
                             }
-
+                            <Button onClick={this.handleCreateRoom}>
+                                Create Room
+                            </Button>
+                            {this.state.createFormVis && 
+                                <Form
+                                    type='Create Room'
+                                    fields={['name']}
+                                    submit={this.createRoom}
+                                    close={this.handleCreateRoom}
+                                />
+                            }
                             <Button onClick={this.handleDeleteRoom}>
                                 Leave Room
                             </Button>
                             
-                            {this.state.deleteFormVisible && 
+                            {this.state.deleteFormVis && 
                                 <Form
                                     type='Delete Room'
                                     fields={['roomName']}

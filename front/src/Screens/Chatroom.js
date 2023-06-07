@@ -40,12 +40,6 @@ class Chatroom extends React.Component{
         });
     }
 
-    // Go back to lobby
-    handleBackClick = () => {
-        this.socket.emit('leave', {room: this.props.room, username: this.props.username});
-        this.props.changeScreen("lobby");
-    }
-
     handleMessageChange = (event) => {
         this.setState({ newMessage: event.target.value });
     }
@@ -61,6 +55,12 @@ class Chatroom extends React.Component{
             // Clear input field
             this.setState({ newMessage: ""});
         }
+    }
+
+    // Go back to lobby
+    handleBackClick = () => {
+        this.socket.emit('leave', {room: this.props.room, username: this.props.username});
+        this.props.changeScreen("lobby");
     }
 
     render(){

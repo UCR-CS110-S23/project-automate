@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router()
-const Message = require("../model/messages");
-const Room = require("../model/room")
 
 module.exports = router;
+
+const Message = require("../model/messages");
+const Room = require("../model/room")
 
 router.get('/:room', async (req, res) => {
     const {room} = req.params;

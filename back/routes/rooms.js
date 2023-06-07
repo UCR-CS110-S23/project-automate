@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router()
 
+module.exports = router;
+
 const Room = require('../model/room'); 
 const User = require('../model/user');
-
-module.exports = router;
 
 router.get('/all', async (req, res) => {
     // TODO: you have to check the database to only return the rooms that the user is in
@@ -65,7 +65,7 @@ router.delete('/leave', async (req, res) => {
 
     if (room && user && user.rooms.includes(room._id)) {
         const index = user.rooms.indexOf(room._id);
-        if (index > -1) {
+        if (index != -1) {
             user.rooms.splice(index, 1);
         }
         await user.save();
