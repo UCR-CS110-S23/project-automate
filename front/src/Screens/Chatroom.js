@@ -16,12 +16,12 @@ class Chatroom extends React.Component{
             newMessage: "",
             searchMessage: "",
             editFormVis: false,
+            timer: null
             // editIndex: -1
         };
     }
 
-    componentDidMount() {
-        // Fetch messages from server
+    fetchMessages = () => {
         fetch(this.props.server_url + `/api/messages/${this.props.room}`, {
             method: "GET",
             credentials: "include",
@@ -32,18 +32,38 @@ class Chatroom extends React.Component{
             res.json().then((data) => {
                 // TODO: set the messages state to the messages fetched from server
                 // ... spreads array received from server into individual elements, allowing for concatenation
-                this.setState({messages:[...data, ...this.state.messages]})
+                this.setState({messages: data});
             });
         });
+    }
 
+    componentDidMount() {
+        // Fetch messages from server
+        this.fetchMessages();
+        this.startMessageFetchTimer();
         this.socket.emit('join', {room: this.props.room, username: this.props.username})
 
         this.socket.on('message', message => {
             if (message.room === this.props.room) {
-                this.setState({ messages: [...this.state.messages, message.message] });
+                this.setState((prevState) => ({
+                    messages: [...prevState.messages, message.message],
+                  }));
             }
         });
     }
+
+    componentWillUnmount() {
+        this.stopMessageFetchTimer(); // Clear the interval timer when the component is unmounted
+    }
+
+    startMessageFetchTimer = () => {
+        const timer = setInterval(this.fetchMessages, 2000); // Fetch messages every 2 seconds (adjust the interval as needed)
+        this.setState({ timer });
+    };
+
+    stopMessageFetchTimer = () => {
+        clearInterval(this.state.timer);
+    };
 
     editMessage = () => {
 
