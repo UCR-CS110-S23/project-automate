@@ -40,7 +40,9 @@ class Chatroom extends React.Component{
 
         this.socket.on('message', message => {
             if (message.room === this.props.room) {
-                this.setState({ messages: [...this.state.messages, message.message] });
+                this.setState((prevState) => ({
+                    messages: [...prevState.messages, message.message],
+                  }));
             }
         });
     }
