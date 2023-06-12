@@ -14,6 +14,7 @@ class Chatroom extends React.Component{
         this.state = {
             messages: [],
             newMessage: "",
+            searchMessage: "",
             editFormVis: false,
             // editIndex: -1
         };
@@ -80,9 +81,25 @@ class Chatroom extends React.Component{
         this.setState(prevState => ({editFormVis: !prevState.editFormVis}));
     }
 
+    handleSearchChange = (event) => {
+        this.setState({ searchMessage: event.target.value });
+    }
+
     render(){
+        const filteredMessages = this.state.messages.filter(message => 
+            message.toLowerCase().includes(this.state.searchMessage.toLowerCase())
+        );
         return(
             <Box display="flex" flexDirection="column" height="100vh">
+                <Box>
+                    <TextField
+                        fullWidth
+                        variant="standard"
+                        placeholder="search messages"
+                        value={this.state.searchInput}
+                        onChange={this.handleSearchChange}
+                    />
+                </Box>
                 <Box display="flex" justifyContent="center" alignItems="center">
                     <IconButton aria-label="Go back" component="span" onClick={this.handleBackClick}>
                         <ArrowBackIcon />
@@ -94,7 +111,7 @@ class Chatroom extends React.Component{
                 {/* Message display area */}
                 <Box flexGrow={1} overflow="auto">
                     <List>
-                        {this.state.messages.map((message) => (
+                        {filteredMessages.map((message) => (
                             <ListItem key={message.id}>
                                 <ListItemText primary={`${this.props.username}: ${message}`} />
                                 <IconButton
