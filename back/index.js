@@ -132,12 +132,6 @@ io.on('connection', (socket) => {
   }
 });
 
-socket.on('message', ({ username, message }) => {
-  this.setState((prevState) => ({
-    messages: [...prevState.messages, `${username}: ${message}`],
-  }));
-});
-
 socket.on('leave', (data) => {
   console.log(`user ${data.username} left room ${data.room}`);
   io.emit('message', {message: `${data.username} has left the room`, room: room});
