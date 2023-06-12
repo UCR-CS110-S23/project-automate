@@ -132,12 +132,10 @@ io.on('connection', (socket) => {
   }
 });
 
-socket.on('message', ({ room, username, message }) => {
-  if (room === this.props.room) {
-    this.setState((prevState) => ({
-      messages: [...prevState.messages, `${username}: ${message}`],
-    }));
-  }
+socket.on('message', ({ username, message }) => {
+  this.setState((prevState) => ({
+    messages: [...prevState.messages, `${username}: ${message}`],
+  }));
 });
 
 socket.on('leave', (data) => {
