@@ -15,10 +15,6 @@ const messageSchema = mongoose.Schema(
       ref: "Room",
       required: true,
     },
-    likes: {
-      type: Number,
-      required: true,
-    }
   },
   {
     timestamps: true,
