@@ -132,6 +132,36 @@ io.on('connection', (socket) => {
   }
 });
 
+socket.on('like', async ({ messageId, index }) => {
+  try {
+    const message = await Message.findById(messageId);
+    if (message) {
+      message.likes += 1;
+      await message.save();
+      io.to(room).emit('like', { index, likes: message.likes });
+      console.log("handlelike");
+      console.log(message.likes);
+    }
+  } catch (err) {
+    console.log('Error updating like count:', err);
+  } 
+});
+
+socket.on('dislike', async ({ messageId, index }) => {
+  try {
+    const message = await Message.findById(messageId);
+    if (message) {
+      message.likes -= 1;
+      await message.save();
+      io.to(room).emit('dislike', { index, likes: message.likes });
+      console.log("handleDislike");
+      console.log(message.likes);
+    }
+  } catch (err) {
+    console.log('Error updating dislike count:', err);
+  }
+});
+
 socket.on('leave', (data) => {
   console.log(`user ${data.username} left room ${data.room}`);
   io.emit('message', {message: `${data.username} has left the room`, room: room});
