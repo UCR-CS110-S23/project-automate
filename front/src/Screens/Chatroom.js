@@ -56,7 +56,8 @@ class Chatroom extends React.Component{
     handleMessageSend = () => {
         if (this.state.newMessage !== "") {
             const info = {
-                message: this.props.username + ": " + this.state.newMessage,
+                room: this.props.room,
+                message: this.state.newMessage,
                 username: this.props.username,
             };
             // Send message to server

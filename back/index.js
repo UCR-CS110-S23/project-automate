@@ -98,7 +98,6 @@ io.use((socket, next) => {
   }
 })
 
-
 io.on('connection', (socket) => {
   let room;
   let userName;
@@ -109,7 +108,7 @@ io.on('connection', (socket) => {
     room = data.room;
     userName = data.username;
     console.log(`user ${userName} is joined to room ${room}`);
-    io.emit('message', {message: `(has joined the room)`, room: room});
+    io.emit('message', {message: `(you joined the room)`, room: room});
   });
   // Handle events for logged in user
   socket.on('message', async ({message, username}) => {
@@ -130,6 +129,14 @@ io.on('connection', (socket) => {
   } catch(err) {
     // Error saving message
     console.log('Error saving message:', err);
+  }
+});
+
+socket.on('message', ({ room, username, message }) => {
+  if (room === this.props.room) {
+    this.setState((prevState) => ({
+      messages: [...prevState.messages, `${username}: ${message}`],
+    }));
   }
 });
 
