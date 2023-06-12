@@ -6,6 +6,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import {io} from 'socket.io-client';
 import Form from '../Components/form';
 
+// Import the thumbs-up and thumbs-down images
+import thumbsUpPNG from '../images/thumbs-up.png';
+import thumbsDownPNG from '../images/thumbs-down.png';
+
+
 class Chatroom extends React.Component{
     constructor(props){
         super(props);
@@ -106,6 +111,19 @@ class Chatroom extends React.Component{
         this.setState({ searchMessage: event.target.value });
     }
 
+    handleLike = (message, index) => {
+        // Send event to the server to add a like reaction
+        this.socket.emit('like', { message, index });
+        console.log("handlelike");
+    };
+    
+      handleDislike = (message, index) => {
+        // Send event to the server to add a dislike reaction
+        this.socket.emit('dislike', { message, index });
+        console.log("handleDislike");
+
+    };
+
     render(){
         const filteredMessages = this.state.messages.filter(message => 
             message.toLowerCase().includes(this.state.searchMessage.toLowerCase())
@@ -152,6 +170,21 @@ class Chatroom extends React.Component{
                                         close={this.handleEditClick}
                                     />
                                 )}
+                                <Button onClick={() => this.handleLike(message.id, message.index)}>
+                                    <img
+                                        src={thumbsUpPNG}
+                                        alt="thumbs-up"
+                                        style={{ width: '15px', height: '15px' }}
+                                    />
+                                </Button>
+                                <span>{message.likes}</span>
+                                <Button onClick={() => this.handleDislike(message.id, message.index)}>
+                                    <img
+                                        src={thumbsDownPNG}
+                                        alt="thumbs-down"
+                                        style={{ width: '15px', height: '15px' }}
+                                    />
+                                </Button>
                             </ListItem>
                         ))}
                         <div ref={this.messagesEndRef} />
