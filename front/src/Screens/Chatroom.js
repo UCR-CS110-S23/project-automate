@@ -59,6 +59,7 @@ class Chatroom extends React.Component{
     startMessageFetchTimer = () => {
         const timer = setInterval(this.fetchMessages, 2000); // Fetch messages every 2 seconds (adjust the interval as needed)
         this.setState({ timer });
+        console.log("refreshing messages");
     };
 
     stopMessageFetchTimer = () => {
