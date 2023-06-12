@@ -2,7 +2,9 @@ import React from "react";
 import { Button, TextField, List, ListItem, ListItemText, Typography, IconButton } from "@mui/material";
 import { Box } from "@mui/system";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EditIcon from '@mui/icons-material/Edit';
 import {io} from 'socket.io-client';
+import Form from '../Components/form';
 
 class Chatroom extends React.Component{
     constructor(props){
@@ -12,6 +14,9 @@ class Chatroom extends React.Component{
         this.state = {
             messages: [],
             newMessage: "",
+            searchMessage: "",
+            editFormVis: false,
+            // editIndex: -1
         };
     }
 
@@ -40,6 +45,10 @@ class Chatroom extends React.Component{
         });
     }
 
+    editMessage = () => {
+
+    }
+
     handleMessageChange = (event) => {
         this.setState({ newMessage: event.target.value });
     }
@@ -47,7 +56,7 @@ class Chatroom extends React.Component{
     handleMessageSend = () => {
         if (this.state.newMessage !== "") {
             const info = {
-                message:  this.props.username + ': ' + this.state.newMessage,
+                message: this.props.username + ": " + this.state.newMessage,
                 username: this.props.username,
             };
             // Send message to server
@@ -63,9 +72,34 @@ class Chatroom extends React.Component{
         this.props.changeScreen("lobby");
     }
 
+    // Edit message when edit button is clicked
+    handleEditClick = () => {
+        // Create Form to allow new message to be entered
+        // Allow Form to be toggled on and off with click of edit button
+        // console.log("index: " + index)
+        // this.setState({ editIndex: index });
+        this.setState(prevState => ({editFormVis: !prevState.editFormVis}));
+    }
+
+    handleSearchChange = (event) => {
+        this.setState({ searchMessage: event.target.value });
+    }
+
     render(){
+        const filteredMessages = this.state.messages.filter(message => 
+            message.toLowerCase().includes(this.state.searchMessage.toLowerCase())
+        );
         return(
             <Box display="flex" flexDirection="column" height="100vh">
+                <Box>
+                    <TextField
+                        fullWidth
+                        variant="standard"
+                        placeholder="search messages"
+                        value={this.state.searchInput}
+                        onChange={this.handleSearchChange}
+                    />
+                </Box>
                 <Box display="flex" justifyContent="center" alignItems="center">
                     <IconButton aria-label="Go back" component="span" onClick={this.handleBackClick}>
                         <ArrowBackIcon />
@@ -77,13 +111,28 @@ class Chatroom extends React.Component{
                 {/* Message display area */}
                 <Box flexGrow={1} overflow="auto">
                     <List>
-                        {this.state.messages.map((message, index) => {
-                            return (
-                                <ListItem key={index}>
-                                    <ListItemText primary={`${message}`} />
-                                </ListItem>
-                            )
-                        })}
+                        {filteredMessages.map((message) => (
+                            <ListItem key={message.id}>
+                                <ListItemText primary={`${message}`} />
+                                <IconButton
+                                    aria-label="Edit"
+                                    component="span"
+                                    onClick={this.handleEditClick}
+                                    color="primary"
+                                    style={{ display: message.startsWith(this.props.username + ":") ? 'inline' : 'none' }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                                {this.state.editFormVis && (
+                                    <Form
+                                        type='edit'
+                                        fields={[message]}
+                                        submit={this.editMessage}
+                                        close={this.handleEditClick}
+                                    />
+                                )}
+                            </ListItem>
+                        ))}
                         <div ref={this.messagesEndRef} />
                     </List>
                 </Box>
