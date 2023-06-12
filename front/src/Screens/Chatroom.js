@@ -56,7 +56,7 @@ class Chatroom extends React.Component{
     handleMessageSend = () => {
         if (this.state.newMessage !== "") {
             const info = {
-                message: this.state.newMessage,
+                message: this.props.username + ": " + this.state.newMessage,
                 username: this.props.username,
             };
             // Send message to server
@@ -113,7 +113,7 @@ class Chatroom extends React.Component{
                     <List>
                         {filteredMessages.map((message) => (
                             <ListItem key={message.id}>
-                                <ListItemText primary={`${this.props.username}: ${message}`} />
+                                <ListItemText primary={`${message}`} />
                                 <IconButton
                                     aria-label="Edit"
                                     component="span"

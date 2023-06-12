@@ -109,7 +109,7 @@ io.on('connection', (socket) => {
     room = data.room;
     userName = data.username;
     console.log(`user ${userName} is joined to room ${room}`);
-    io.emit('message', {message: `${userName} has joined the room`, room: room});
+    io.emit('message', {message: `(has joined the room)`, room: room});
   });
   // Handle events for logged in user
   socket.on('message', async ({message, username}) => {
