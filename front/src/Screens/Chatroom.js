@@ -10,7 +10,6 @@ import Form from '../Components/form';
 import thumbsUpPNG from '../images/thumbs-up.png';
 import thumbsDownPNG from '../images/thumbs-down.png';
 
-
 class Chatroom extends React.Component{
     constructor(props){
         super(props);
@@ -21,8 +20,10 @@ class Chatroom extends React.Component{
             newMessage: "",
             searchMessage: "",
             editFormVis: false,
-            timer: null
-            // editIndex: -1
+            timer: null,
+            editIndex: -1,
+            editedMessage: '',
+            updatedMessages: []
         };
     }
 
@@ -71,9 +72,42 @@ class Chatroom extends React.Component{
         clearInterval(this.state.timer);
     };
 
-    editMessage = () => {
+    editMessage = (index, updatedMessage) => {
+        // Get a copy of the messages array
+        const updatedMessages = [...this.state.messages];
+        // Update the message at the specified index
+        updatedMessages[index] = this.props.username + ": " + updatedMessage;
+        console.log(index);
+        // console.log(updatedMessages[index]);
+        for (let i = 0; i < updatedMessages.length; i++) {
+            console.log(updatedMessages[i]);
+        }
+        // console.log("updated message: " + JSON.stringify(updatedMessage));
+        
+        // Update the state with the updated messages
+        this.setState({ updatedMessages });
+        this.updateMessagesOnServer(updatedMessages);
+    };
 
-    }
+    updateMessagesOnServer = (updatedMessages) => {
+        fetch(this.props.server_url + `/api/messages/${this.props.room}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            }    
+        }).then((res) => {
+            res.json().then((data) => {
+                // TODO: set the messages state to the messages fetched from server
+                // ... spreads array received from server into individual elements, allowing for concatenation
+                this.setState({messages: updatedMessages});
+            });
+        });
+    };
+    
+    scrollToBottom = () => {
+        this.messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    };
 
     handleMessageChange = (event) => {
         this.setState({ newMessage: event.target.value });
@@ -99,12 +133,19 @@ class Chatroom extends React.Component{
     }
 
     // Edit message when edit button is clicked
-    handleEditClick = () => {
-        // Create Form to allow new message to be entered
-        // Allow Form to be toggled on and off with click of edit button
-        // console.log("index: " + index)
-        // this.setState({ editIndex: index });
-        this.setState(prevState => ({editFormVis: !prevState.editFormVis}));
+    handleEditClick = (index) => {
+        // this.setState(prevState => ({editFormVis: !prevState.editFormVis}));
+        // if (index === this.state.editIndex) {
+        //     // Clicked the same EditIcon again, cancel the edit mode
+        //     this.setState({ editIndex: -1, editedMessage: '' });
+        //   } else {
+        //     // Clicked a different EditIcon, enter the edit mode
+        //     this.setState({ editIndex: index, editedMessage: this.state.messages[index] });
+        //   }
+        this.setState((prevState) => ({
+            editFormVis: !prevState.editFormVis,
+            editIndex: index,
+          }));
     }
 
     handleSearchChange = (event) => {
@@ -126,7 +167,7 @@ class Chatroom extends React.Component{
 
     render(){
         const filteredMessages = this.state.messages.filter(message => 
-            message.toLowerCase().includes(this.state.searchMessage.toLowerCase())
+            typeof message === "string" && message.toLowerCase().includes(this.state.searchMessage.toLowerCase())
         );
         return(
             <Box display="flex" flexDirection="column" height="100vh">
@@ -150,23 +191,23 @@ class Chatroom extends React.Component{
                 {/* Message display area */}
                 <Box flexGrow={1} overflow="auto">
                     <List>
-                        {filteredMessages.map((message) => (
-                            <ListItem key={message.id}>
+                        {filteredMessages.map((message, index) => (
+                            <ListItem key={index}>
                                 <ListItemText primary={`${message}`} />
                                 <IconButton
                                     aria-label="Edit"
                                     component="span"
-                                    onClick={this.handleEditClick}
+                                    onClick={() => this.handleEditClick(index)}
                                     color="primary"
                                     style={{ display: message.startsWith(this.props.username + ":") ? 'inline' : 'none' }}
                                 >
                                     <EditIcon />
                                 </IconButton>
-                                {this.state.editFormVis && (
+                                {this.state.editIndex === index && (
                                     <Form
                                         type='edit'
-                                        fields={[message]}
-                                        submit={this.editMessage}
+                                        fields={['message']}
+                                        submit={(updatedMessage) => this.editMessage(index, updatedMessage.message)}
                                         close={this.handleEditClick}
                                     />
                                 )}
