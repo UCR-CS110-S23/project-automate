@@ -72,37 +72,17 @@ class Chatroom extends React.Component{
         clearInterval(this.state.timer);
     };
 
-    editMessage = (index, updatedMessage) => {
-        // Get a copy of the messages array
-        const updatedMessages = [...this.state.messages];
-        // Update the message at the specified index
-        updatedMessages[index] = this.props.username + ": " + updatedMessage;
-        console.log(index);
-        // console.log(updatedMessages[index]);
-        for (let i = 0; i < updatedMessages.length; i++) {
-            console.log(updatedMessages[i]);
-        }
-        // console.log("updated message: " + JSON.stringify(updatedMessage));
-        
-        // Update the state with the updated messages
-        this.setState({ updatedMessages });
-        this.updateMessagesOnServer(updatedMessages);
-    };
-
-    updateMessagesOnServer = (updatedMessages) => {
-        fetch(this.props.server_url + `/api/messages/${this.props.room}`, {
-            method: "PUT",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            }    
-        }).then((res) => {
-            res.json().then((data) => {
-                // TODO: set the messages state to the messages fetched from server
-                // ... spreads array received from server into individual elements, allowing for concatenation
-                this.setState({messages: updatedMessages});
-            });
-        });
+    editMessage = (message, updatedMessage) => {
+        const info = {
+            message: "(old) " + message + " => (new) " + this.props.username + ": " + updatedMessage,
+            username: this.props.username,
+        };
+        // Send message to server
+        this.socket.emit('message', info);
+        this.setState((prevState) => ({
+            editFormVis: !prevState.editFormVis,
+          }));
+        this.scrollToBottom();
     };
     
     scrollToBottom = () => {
@@ -134,14 +114,6 @@ class Chatroom extends React.Component{
 
     // Edit message when edit button is clicked
     handleEditClick = (index) => {
-        // this.setState(prevState => ({editFormVis: !prevState.editFormVis}));
-        // if (index === this.state.editIndex) {
-        //     // Clicked the same EditIcon again, cancel the edit mode
-        //     this.setState({ editIndex: -1, editedMessage: '' });
-        //   } else {
-        //     // Clicked a different EditIcon, enter the edit mode
-        //     this.setState({ editIndex: index, editedMessage: this.state.messages[index] });
-        //   }
         this.setState((prevState) => ({
             editFormVis: !prevState.editFormVis,
             editIndex: index,
@@ -207,7 +179,7 @@ class Chatroom extends React.Component{
                                     <Form
                                         type='edit'
                                         fields={['message']}
-                                        submit={(updatedMessage) => this.editMessage(index, updatedMessage.message)}
+                                        submit={(updatedMessage) => this.editMessage(message, updatedMessage.message)}
                                         close={this.handleEditClick}
                                     />
                                 )}
