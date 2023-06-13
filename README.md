@@ -22,4 +22,4 @@ A pencil icon will appear only next to messages sent by the user who is currentl
 
 ![image](https://github.com/UCR-CS110-S23/project-automate/assets/59616031/655828ac-778e-4cb2-afd9-417731fce1da)
 
-![image](https://github.com/UCR-CS110-S23/project-automate/assets/59616031/64e1f155-6674-45d9-948d-27c8156ed47c)
+![image](https://github.com/UCR-CS110-S23/project-automate/assets/59616031/ff97e152-8b1b-4f26-9a76-42c4847f89c8)
